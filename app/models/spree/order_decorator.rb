@@ -11,7 +11,7 @@ Spree::Order.class_eval do
         self.update_attribute(:invoice_state, 'ready')
         if (SpreeAutoInvoice.auto_invoice)
           self.invoice.invoice!
-          self.update_attribute(:invoice_state, 'invoiced') #TODO Va bene qui aggiornare l'invoice_state?
+          self.update_attribute(:invoice_state, 'invoiced') #TODO Va bene qui aggiornare l'invoice_state? me par ben
         end
       end
     end

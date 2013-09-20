@@ -7,3 +7,11 @@ en:
       pending: pending
       ready: ready
       canceled: canceled
+    invoice_mailer:
+      send_invoice:
+        subject: "Invoice"
+    invoice:
+      invoice: "Invocice"
+      resend_invoice: "Resend invoice"
+      create_invoice: "Create invoice"
+      download_invoice: "Download invoice"

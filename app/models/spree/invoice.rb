@@ -3,7 +3,7 @@ require 'fileutils'
 module Spree
 class Invoice < ActiveRecord::Base
     belongs_to :order
-    attr_accessible :number, :state, :order
+    # attr_accessible :number, :state, :order
   
     scope :current_year, lambda { where(["created_at > ? AND created_at < ?", Time.now.at_beginning_of_year, Time.now.at_end_of_year]) }
     scope :invoiced, lambda { where(:state => 'invoiced') }
@@ -40,7 +40,7 @@ class Invoice < ActiveRecord::Base
     end
     
     def after_invoice
-      #TODO Send mail
+      InvoiceMailer.send_invoice(self.order).deliver
     end
           
     def generate_pdf

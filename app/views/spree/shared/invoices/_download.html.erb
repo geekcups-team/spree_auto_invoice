@@ -1,0 +1,3 @@
+<% if @order.invoice &&  @order.invoice.state == "invoiced" %>
+    <%= link_to t('spree.invoice.download_invoice'), admin_order_invoice_path(@order,@order.invoice), :class => 'icon-download button' %>
+<% end %>

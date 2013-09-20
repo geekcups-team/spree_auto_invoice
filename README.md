@@ -3,6 +3,11 @@ SpreeAutoInvoice
 
 Introduction goes here.
 
+Dependencies
+------------
+
+To generate the pdf is used:[https://code.google.com/p/wkhtmltopdf/](https://code.google.com/p/wkhtmltopdf/)
+
 Installation
 ------------
 
