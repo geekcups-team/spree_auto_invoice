@@ -12,6 +12,8 @@ en:
         subject: "Invoice"
     invoice:
       invoice: "Invocice"
+      invoices: "Invocices"
       resend_invoice: "Resend invoice"
       create_invoice: "Create invoice"
       download_invoice: "Download invoice"
+      download_all_invoice: "Download all invoice"

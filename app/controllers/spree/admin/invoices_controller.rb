@@ -1,3 +1,4 @@
+require 'zip'
 module Spree
   module Admin
     class InvoicesController < Spree::Admin::BaseController
@@ -17,6 +18,65 @@ module Spree
         order.invoice.ready
         redirect_to edit_admin_order_path(order)
       end
+      
+      def download_all
+        
+        params[:q] ||= {}
+        params[:q][:completed_at_not_null] ||= '1' if Spree::Config[:show_only_complete_orders_by_default]
+        @show_only_completed = params[:q][:completed_at_not_null].present?
+        params[:q][:s] ||= @show_only_completed ? 'completed_at desc' : 'created_at desc'
+
+        # As date params are deleted if @show_only_completed, store
+        # the original date so we can restore them into the params
+        # after the search
+        created_at_gt = params[:q][:created_at_gt]
+        created_at_lt = params[:q][:created_at_lt]
+
+        params[:q].delete(:inventory_units_shipment_id_null) if params[:q][:inventory_units_shipment_id_null] == "0"
+
+        if !params[:q][:created_at_gt].blank?
+          params[:q][:created_at_gt] = Time.zone.parse(params[:q][:created_at_gt]).beginning_of_day rescue ""
+        end
+
+        if !params[:q][:created_at_lt].blank?
+          params[:q][:created_at_lt] = Time.zone.parse(params[:q][:created_at_lt]).end_of_day rescue ""
+        end
+
+        if @show_only_completed
+          params[:q][:completed_at_gt] = params[:q].delete(:created_at_gt)
+          params[:q][:completed_at_lt] = params[:q].delete(:created_at_lt)
+        end
+
+        @search = Order.accessible_by(current_ability, :index).ransack(params[:q])
+        @orders = @search.result.includes([:user, :shipments, :payments]).
+          page(params[:page]).
+          per(params[:per_page] || Spree::Config[:orders_per_page])
+
+        # Restore dates
+        params[:q][:created_at_gt] = created_at_gt
+        params[:q][:created_at_lt] = created_at_lt
+        # like orders
+        
+        # inizio crezione zip
+          file_name = "#{t('spree.invoice.invoices')}.zip"
+          t = Tempfile.new("invoice-temp-#{Time.now}")
+          Zip::OutputStream.open(t.path) do |z|
+            @orders.each do |order|
+              if !order.invoice.nil? && !order.invoice.number.nil?
+                z.put_next_entry("#{order.invoice.number}.pdf")
+                z.print IO.read(Rails.root.join(SpreeAutoInvoice.invoice_path, "#{order.number}", "#{order.invoice.number}.pdf"))
+              end
+            end
+          end
+          send_file t.path, :type => 'application/zip',
+                                 :disposition => 'attachment',
+                                 :filename => file_name
+          t.close
+        # fine creazione zip
+        
+        
+      end
+      
     end
   end
 end
