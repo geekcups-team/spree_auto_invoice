@@ -33,10 +33,14 @@ class Invoice < ActiveRecord::Base
       generate_invoice_number
       pdf = generate_pdf
       ensure_invoice_directory
-      save_path = Rails.root.join(SpreeAutoInvoice.invoice_path, "#{self.order.number}", "#{self.number}.pdf")
+      save_path = file_path
       File.open(save_path, 'wb') do |file|
         file << pdf
       end
+    end
+    
+    def file_path
+      Rails.root.join(SpreeAutoInvoice.invoice_path, "#{self.order.number}", "#{self.number}.pdf")
     end
     
     def after_invoice

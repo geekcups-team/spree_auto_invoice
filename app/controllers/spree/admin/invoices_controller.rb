@@ -1,10 +1,11 @@
-require 'zip'
+#require 'zip'
 module Spree
   module Admin
     class InvoicesController < Spree::Admin::BaseController
       def show
         order = Spree::Order.find_by(:number => params[:order_id])
-        send_file Rails.root.join(SpreeAutoInvoice.invoice_path, "#{order.number}", "#{order.invoice.number}.pdf")
+
+        send_file Rails.root.join(order.invoice.file_path) 
       end
       
       def send_mail
@@ -13,9 +14,11 @@ module Spree
         redirect_to edit_admin_order_path(order)
       end
       
-      def abilitate_invoice
+      def create
         order = Spree::Order.find_by(:number => params[:order_id])
-        order.invoice.ready
+        order.invoice.invoice!
+        order.update_attribute(:invoice_state, 'invoiced')
+        flash[:success] = I18n.t('spree.invoice.success')
         redirect_to edit_admin_order_path(order)
       end
       
@@ -64,17 +67,14 @@ module Spree
             @orders.each do |order|
               if !order.invoice.nil? && !order.invoice.number.nil?
                 z.put_next_entry("#{order.invoice.number}.pdf")
-                z.print IO.read(Rails.root.join(SpreeAutoInvoice.invoice_path, "#{order.number}", "#{order.invoice.number}.pdf"))
+                z.print IO.read(order.invoice.file_path)
               end
             end
           end
           send_file t.path, :type => 'application/zip',
-                                 :disposition => 'attachment',
-                                 :filename => file_name
+                            :disposition => 'attachment',
+                            :filename => file_name
           t.close
-        # fine creazione zip
-        
-        
       end
       
     end

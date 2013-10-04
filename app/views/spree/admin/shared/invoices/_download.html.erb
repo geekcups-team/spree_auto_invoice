@@ -1,14 +1,14 @@
-<% if @order %>
-  <% if @order.invoice && @order.invoice.state == "ready" || @order.invoice.state == "invoiced" %>
+<% if @order && @order.invoice %>
+  <% if @order.invoice_state == "ready"%>
+    <li>
+      <%= link_to t('spree.invoice.create'), admin_order_create_invoice_path(@order), :class => 'icon-file-alt button' %>
+    </li>
+  <% elsif @order.invoice_state == "invoiced" %>
     <li>
       <%= link_to t('spree.invoice.invoice'), admin_order_invoice_path(@order,@order.invoice), :class => 'icon-download-alt button' %>
     </li>
     <li>
       <%= link_to t('spree.invoice.resend_invoice'), admin_order_send_invoice_path(@order,@order.invoice), :class => 'icon-share button' %>
-    </li>
-  <% else %>
-    <li>
-      <%= link_to t('spree.invoice.create_invoice'), admin_order_abilitate_invoice_path(@order,@order.invoice), :class => 'icon-share button', :disabled => !@order.paid? %>
     </li>
   <% end %>
 <% end %>
