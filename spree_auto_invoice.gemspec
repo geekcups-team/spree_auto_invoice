@@ -2,7 +2,7 @@
 Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.name        = 'spree_auto_invoice'
-  s.version     = '2.0.4'
+  s.version     = '2.1.1'
   s.summary     = 'A spree auto invoice generator with state machine'
   s.description = 'Invoice generator for spree that generate invoice automatically on order paid'
   s.required_ruby_version = '>= 1.9.3'

@@ -14,7 +14,7 @@ Installation
 Add spree_auto_invoice to your Gemfile:
 
 ```ruby
-gem 'spree_auto_invoice'
+gem "spree_auto_invoice", "~> 2.1.1"
 ```
 
 Bundle your dependencies and run the installation generator:
