@@ -17,11 +17,34 @@ Spree::Order.class_eval do
     end
   end
   
+  def taxes
+    result = []
+    self.line_items.each do |line_item|
+      line_item.taxes.each do |tax|
+        if (i = result.index { |r| r[:tax_rate] == tax[:tax_rate] })
+          tax_line = result[i]
+        else
+          tax_line = 
+          {
+            :tax_rate => tax[:tax_rate],
+            :total_tax => 0
+          }
+          result << tax_line
+        end
+        tax_line[:total_tax] += tax[:total_tax]
+      end
+    end
+    result
+  end
+  
+  def total_untaxed
+    self.line_items.map {|item| item.total_untaxed }.sum
+  end
   
   private
-  def add_invoice
-    self.create_invoice
-    self.update_attribute(:invoice_state, 'pending')
-  end
+    def add_invoice
+      self.create_invoice
+      self.update_attribute(:invoice_state, 'pending')
+    end
   
 end

@@ -1,5 +1,6 @@
 <html>
   <head>
+
       <meta http-equiv="Content-type" content="text/html; charset=utf-8">
       <%= wicked_pdf_stylesheet_link_tag "spree/admin/invocie_pdf" %>
   
@@ -7,18 +8,12 @@
   <body>
     <div class="head">
       <div class="logo">
-        <%# debugger %>
-        <!--
-          TODO Load css and image with wicked
-        -->
-          
-        <%= image_tag "logo.png"%>
       </div>
       <div class="head-info">
         <ul>
-          <li>Geekcups srls - P.Iva - C.F. - Registro imprese: 04698900281 REA: PD-41132</li>
-          <li>Sede legale: via Boccaccio 9, Noventa Padovana (PD), 35027</li>
-          <li>Sede operativa: via Croce Rossa 36, Padova (PD), 35129</li>
+          <li>Geekcups srls - P.Iva - C.F. - Registro imprese: xxx REA: PD-41132</li>
+          <li><strong>Sede legale</strong>: via xxx</li>
+          <li><strong>Sede operativa</strong>: via Croce Rossa 36, Padova (PD), 35129</li>
           <li>info@geekcups.com - Capitale sociale: € 900</li>
         </ul>
       </div>
@@ -36,9 +31,9 @@
       </div>
       <div class="head-invoice-info">
         <ul>
-          <li><%= t('invoice.document')%>: <%= t('invoice.bill_of_sale')%></li>
-          <li><%= t('invoice.date') %>: <%= @order.invoice.updated_at %></li>
-          <li><%= t('invoice.number') %>: <%= @order.invoice.number %></li>
+          <li><%= t('invoice.document')%>: <strong><%= t('invoice.bill_of_sale')%></strong></li>
+          <li><%= t('invoice.date') %>: <strong><%= @order.invoice.created_at %></strong></li>
+          <li><%= t('invoice.number') %>: <strong><%= @order.invoice.number %></strong></li>
         </ul>
       </div>
     </div>
@@ -48,7 +43,9 @@
         <th><%= t('invoice.description')%></th>
         <th><%= t('invoice.quantity')%></th>
         <th><%= t('invoice.unit_amount')%></th>
-        <th><%= t('invoice.vat')%></th>
+        <% @order.taxes.each do |tax| %>
+          <th><%= tax[:tax_rate].name%></th>
+        <% end%>
         <th><%= t('invoice.total')%></th>
       </tr>
       
@@ -56,15 +53,70 @@
         <tr>
           <td><%= line_item.product.description %></td>
           <td><%= line_item.quantity %></td>
-          <td><%= line_item.quantity %></td>
-          <td><%= line_item.variant.price_in(line_item.product.currency).display_price %></td>
-          <td>da calcpolare </td>
-          <td><%= line_item.order.display_total %></td>
+          <td><%= number_to_currency line_item.price_untaxed %></td>
+          <% @order.taxes.each do |tax| %>
+            <% i = line_item.taxes.index { |r| r[:tax_rate] == tax[:tax_rate] }%>
+            <% if i %>
+              <td><%= number_to_percentage line_item.taxes[i][:tax_rate].amount * 100 %></td>
+            <% else %>
+              <td>&nbsp;</td>
+            <% end %>
+          <% end%>
+          <td><%= line_item.total_taxed %></td>
         </tr>
+        <% if line_item.respond_to? :discount and line_item.discount > 0 %>
+          <tr>
+            <td>(<%= t('invoice.discount') %>)</td>
+            <td>-<%= line_item.single_money %></td>
+            <td>&nbsp;</td>
+            <td>-<%= number_to_currency line_item.display_amount %></td>
+          </tr>
+        <% end %>
       <% end %>
     </table>
     
-    <h1>Order number <%= @order.number %></h1>
-    <h1>Invoice number <%= @order.invoice.number %></h1>
+    <table>
+      <tr>
+        <td><%= t(:item_total) %>: </td>
+        <td><%= number_to_currency @order.total_untaxed %></td>
+      </tr>
+      
+      <tr>
+        <td><%= t('invoice.shipment') %>: </td>
+        <td><%= number_to_currency @order.ship_total %></td>
+      </tr>
+      
+      <% @order.adjustments.promotion.each do |promotion| %>
+        <tr>
+          <td><%= promotion.label %> </td>
+            <td><%= number_to_currency promotion.amount %> </td>
+        </tr>
+      <% end %>
+      
+      <% @order.adjustments.manual.each do |manual| %>
+        <tr>
+          <td><%= manual.label %> </td>
+            <td><%= number_to_currency manual.amount %> </td>
+        </tr>
+      <% end %>
+      
+      <% @order.taxes.each do |tax| %>
+        <tr>
+          <td>
+            <%= tax[:tax_rate].name%>
+          </td>
+          <td>
+            <%= number_to_currency tax[:total_tax] %>
+          </td>
+        </tr>
+      <% end%>
+
+      <tr>
+        <td><strong><%= t(:order_total) %>:</strong></td>
+        <td><strong><span id='summary-order-total'><%= number_to_currency @order.total %></span></strong></td>
+      </tr>
+      
+    </table>
+    
   </body>
 </html>

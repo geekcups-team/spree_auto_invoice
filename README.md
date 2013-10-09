@@ -1,7 +1,7 @@
 SpreeAutoInvoice
 ================
 
-Introduction goes here.
+Spree invoice gem with state machine.
 
 Dependencies
 ------------
@@ -31,27 +31,14 @@ In initializers folder you can find spree_auto_invoice.rb with the various confi
 TODO
 -------
 ###General
-* Create mailer and send mail on Spree::Invoice#after_invoice to user
 * What we do when a payment is removed and invoice is generated?
 * What we do when a payment is removed and the invoice isn't generated?
 
 ###Auto invoice
 * Testing auto invoice with immediate payments (credit card)
 
-###Invoice controller
-* Create invoice controller (/admin/orders/{:order_id}/invoices)
-* Create show method to download invoice
-
-###Admin orders views
-* Create button "download invoice" near "Filter result" do download all invoice (zipped) (orders#index)
-* Create link on "invoiced" to download the invoice in the grid (orders#index)
-* Create button to generate invoice if state in "ready" like shipment. This is the case auto_invoice = false (orders#edit)
-
 ###Invoice template
 * Create better invoice template
-
-###Users orders views
-* Create invoice download link on user orders grid.
 
 Testing
 -------

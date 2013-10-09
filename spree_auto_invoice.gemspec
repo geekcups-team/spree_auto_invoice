@@ -10,6 +10,7 @@ Gem::Specification.new do |s|
   s.author    = 'Geekcups srls'
   s.email     = 'info@geekcups.com'
   s.homepage  = 'http://www.geekcups.com'
+  
 
   #s.files       = `git ls-files`.split("\n")
   #s.test_files  = `git ls-files -- {test,spec,features}/*`.split("\n")
@@ -18,6 +19,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency 'spree_core', '~> 2.1.1'
   s.add_dependency 'wicked_pdf'
+  s.add_dependency 'rubyzip'
 
   s.add_development_dependency 'capybara', '~> 2.1'
   s.add_development_dependency 'coffee-rails'
